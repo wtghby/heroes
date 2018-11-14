@@ -2,6 +2,6 @@
 import scrapy
 
 
-class Department(scrapy.Item):
+class Result(scrapy.Item):
     # 数据列表
     stocks = scrapy.Field()

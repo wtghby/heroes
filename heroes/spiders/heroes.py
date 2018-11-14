@@ -2,6 +2,7 @@
 import scrapy
 from heroes.items import Stock
 from heroes.items import Department
+from heroes.items import Result
 from urllib import parse as urlparse
 
 
@@ -134,7 +135,9 @@ class heroes(scrapy.Spider):
             item['rise_departments'] = red_departments
             item['fall_departments'] = green_departments
             # print(detali_title)
-        print(stocks)
+        result = Result.Result()
+        result.stocks = stocks
+        print(result.stocks)
         # self.print_by_code(stocks,'002408')
 
     # ------当日龙虎榜解析
@@ -148,7 +151,7 @@ class heroes(scrapy.Spider):
             if stock['code'] == code:
                 return stock
 
-    def print_by_code(self,stocks,code):
+    def print_by_code(self, stocks, code):
         for stock in stocks:
             # print(stock['code'])
             if stock['code'] == code:
