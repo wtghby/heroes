@@ -137,7 +137,7 @@ class heroes(scrapy.Spider):
             # print(detali_title)
         result = Result.Result()
         result.stocks = stocks
-        print(result.stocks)
+        # print(result.stocks)
         # self.print_by_code(stocks,'002408')
 
     # ------当日龙虎榜解析

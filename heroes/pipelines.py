@@ -8,4 +8,5 @@
 
 class HeroesPipeline(object):
     def process_item(self, item, spider):
+        print(item['stocks'])
         return item
