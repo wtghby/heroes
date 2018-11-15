@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import json
+
 import scrapy
-from heroes.items import Stock
+
 from heroes.items import Department
 from heroes.items import Result
-from urllib import parse as urlparse
+from heroes.items import Stock
 
 
 class heroes(scrapy.Spider):
@@ -27,14 +29,7 @@ class heroes(scrapy.Spider):
             item['buy'] = data.xpath(self.get_path(i, 7)).extract_first()
             stocks.append(item)
             i += 1
-            # print(item['code'])
-            # print(item['name'])
-            # print(item['price'])
-            # print(item['increase'])
-            # print(item['deal'])
-            # print(item['buy'])
         # -----------获取当日龙虎榜列表--------------------------
-        # print(stocks)
         details = response.xpath('//div[@class="rightcol fr"]//@stockcode').extract()
         # 类型名称：xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][1]/p/text()').extract_first()
         # 成交额：xpath('//div[@class="rightcol fr"]/div[@class="stockcont"]/div[@class="cell-cont cjmx"]/p[@style="padding: 7px 0;"]/text()').extract_first()
@@ -68,9 +63,6 @@ class heroes(scrapy.Spider):
             # 买入营业部前5
             k = 1
             red_departments = []
-            # red_departments_rise = [5]
-            # red_departments_fall = [5]
-            # red_departments_total = [5]
 
             while k < 6:
                 department = Department.Department()
@@ -78,67 +70,49 @@ class heroes(scrapy.Spider):
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][1]/tbody/tr[' + str(
                     k) + ']/td[@class="tl rel"]//@title').extract_first()
                 department['name'] = red_department
-                # red_departments.append(red_department)
                 red_department_rise = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][1]/tbody/tr[' + str(
                     k) + ']/td[2]/text()').extract_first()
                 department['rise'] = red_department_rise
-                # red_departments_rise.append(red_department_rise)
                 red_department_fall = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][1]/tbody/tr[' + str(
                     k) + ']/td[3]/text()').extract_first()
                 department['fall'] = red_department_fall
-                # red_departments_fall.append(red_department_fall)
                 red_department_total = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][1]/tbody/tr[' + str(
                     k) + ']/td[4]/text()').extract_first()
                 department['total'] = red_department_total
-                # red_departments_total.append(red_department_total)
-                # print(red_departments[k])
                 red_departments.append(department)
                 k += 1
 
             # 卖出营业部钱5
             k = 1
             green_departments = []
-            # green_departments_rise = [5]
-            # green_departments_fall = [5]
-            # green_departments_total = [5]
             while k < 6:
                 department = Department.Department()
                 green_department = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][2]/tbody/tr[' + str(
                     k) + ']/td[@class="tl rel"]//@title').extract_first()
                 department['name'] = green_department
-                # green_departments.append(green_department)
                 green_department_rise = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][2]/tbody/tr[' + str(
                     k) + ']/td[2]/text()').extract_first()
                 department['rise'] = green_department_rise
-                # green_departments_rise.append(green_department_rise)
                 green_department_fall = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][2]/tbody/tr[' + str(
                     k) + ']/td[3]/text()').extract_first()
                 department['fall'] = green_department_fall
-                # green_departments_fall.append(green_department_fall)
                 green_department_total = response.xpath('//div[@class="rightcol fr"]/div[@class="stockcont"][' + str(
                     j) + ']/div[@class="cell-cont cjmx"]/table[@class="m-table m-table-nosort mt10"][2]/tbody/tr[' + str(
                     k) + ']/td[4]/text()').extract_first()
                 department['total'] = green_department_total
-                # green_departments_total.append(green_department_total)
-                # print(green_departments[k])
                 green_departments.append(department)
                 k += 1
-
             j += 1
 
             item['rise_departments'] = red_departments
             item['fall_departments'] = green_departments
-            # print(detali_title)
-        result = Result.Result()
-        result.stocks = stocks
-        # print(result.stocks)
-        # self.print_by_code(stocks,'002408')
+            yield item
 
     # ------当日龙虎榜解析
     def get_path(self, row, col):
