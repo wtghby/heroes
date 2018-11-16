@@ -12,6 +12,7 @@ class heroes(scrapy.Spider):
     name = "heroes"
     start_urls = ["http://data.10jqka.com.cn/market/longhu"]
     allowed_domains = ['data.10jqka.com.cn']
+    reason = '日涨幅偏离值达7%的证券'
 
     def parse(self, response):
         # -----------获取当日龙虎榜列表--------------------------
@@ -112,6 +113,11 @@ class heroes(scrapy.Spider):
 
             item['rise_departments'] = red_departments
             item['fall_departments'] = green_departments
+            # if self.reason in item['reason']:
+            #     print(item['code'])
+            #     print(item['name'])
+            #     print(item['increase'])
+            #     print('买入：' + item['rise'] + ' --- 卖出：' + item['fall'])
             yield item
 
     # ------当日龙虎榜解析
