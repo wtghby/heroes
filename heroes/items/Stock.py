@@ -25,3 +25,5 @@ class Stock(scrapy.Item):
     rise_departments = scrapy.Field()
     # 卖出前5营业部
     fall_departments = scrapy.Field()
+    # 日期
+    date = scrapy.Field()

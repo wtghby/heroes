@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
 
 import scrapy
 
 from heroes.items import Department
-from heroes.items import Result
 from heroes.items import Stock
 
 
@@ -16,12 +14,15 @@ class heroes(scrapy.Spider):
 
     def parse(self, response):
         # -----------获取当日龙虎榜列表--------------------------
+        date = response.xpath(
+            '//div[@id="ggmx"]/div[@class="table-tit"]/div[@class="sel-date date_select date_select_day"]/div[@class="sel-date-panel"]//@value').extract_first()
         # 获取所有table节点
         datas = response.xpath('//div[@class="twrap"]/table/tbody/child::*')
         i = 1
         stocks = []
         for data in datas:
             item = Stock.Stock()
+            item['date'] = date
             item['code'] = data.xpath(self.get_path(i, 2)).extract_first()
             item['name'] = data.xpath(self.get_path(i, 3)).extract_first()
             item['price'] = data.xpath(self.get_path(i, 4)).extract_first()
@@ -113,11 +114,6 @@ class heroes(scrapy.Spider):
 
             item['rise_departments'] = red_departments
             item['fall_departments'] = green_departments
-            # if self.reason in item['reason']:
-            #     print(item['code'])
-            #     print(item['name'])
-            #     print(item['increase'])
-            #     print('买入：' + item['rise'] + ' --- 卖出：' + item['fall'])
             yield item
 
     # ------当日龙虎榜解析

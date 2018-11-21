@@ -25,16 +25,16 @@ class Mysql:
         # 插入营业部数据
         for department in item['rise_departments']:
             # 买入营业部
-            self.insert_department(item['code'], department, 0)
+            self.insert_department(item['code'], department, 0, item['date'])
         for department in item['fall_departments']:
             # 卖出营业部
-            self.insert_department(item['code'], department, 1)
+            self.insert_department(item['code'], department, 1, item['date'])
 
     def insert_stock(self, stock):
         sql = """insert into tb_stock(name,price,increase,deal,buy,rise,fall,reason,code,ddate) values (
         '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')""" % (
             stock['name'], stock['price'], stock['increase'], stock['deal'], stock['buy'],
-            stock['rise'], stock['fall'], stock['reason'], stock['code'], self.date)
+            stock['rise'], stock['fall'], stock['reason'], stock['code'], stock['date'])
 
         cursor = self.connect.cursor()
         try:
@@ -43,10 +43,10 @@ class Mysql:
         except:
             self.connect.rollback()
 
-    def insert_department(self, code, department, type):
+    def insert_department(self, code, department, type, date):
         sql = """insert into tb_department(name,rise,fall,total,code,ddate,type) values ('%s','%s','%s','%s','%s','%s','%s')""" % (
             department['name'], department['rise'], department['fall'], department['total'], code,
-            self.date, type)
+            date, type)
 
         cursor = self.connect.cursor()
         try:
