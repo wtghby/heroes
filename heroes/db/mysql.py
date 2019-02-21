@@ -2,6 +2,7 @@
 import time
 
 import pymysql
+import uuid
 
 
 class Mysql:
@@ -21,32 +22,35 @@ class Mysql:
 
     def insert(self, item):
         # 插入股票数据
-        self.insert_stock(item)
+        uid = self.insert_stock(item)
         # 插入营业部数据
         for department in item['rise_departments']:
             # 买入营业部
-            self.insert_department(item['code'], department, 0, item['date'])
+            self.insert_department(item['code'], department, 0, item['date'], uid)
         for department in item['fall_departments']:
             # 卖出营业部
-            self.insert_department(item['code'], department, 1, item['date'])
+            self.insert_department(item['code'], department, 1, item['date'], uid)
 
     def insert_stock(self, stock):
-        sql = """insert into tb_stock(name,price,increase,deal,buy,rise,fall,reason,code,ddate) values (
-        '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')""" % (
-            stock['name'], stock['price'], stock['increase'], stock['deal'], stock['buy'],
+        uid = uuid.uuid1()
+        print(uid)
+        sql = """insert into tb_stock(id,name,price,increase,deal,buy,rise,fall,reason,code,ddate) values (
+        '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')""" % (
+            uid, stock['name'], stock['price'], stock['increase'], stock['deal'], stock['buy'],
             stock['rise'], stock['fall'], stock['reason'], stock['code'], stock['date'])
 
         cursor = self.connect.cursor()
         try:
             cursor.execute(sql)
             self.connect.commit()
+            return uid
         except:
             self.connect.rollback()
 
-    def insert_department(self, code, department, type, date):
-        sql = """insert into tb_department(name,rise,fall,total,code,ddate,type) values ('%s','%s','%s','%s','%s','%s','%s')""" % (
+    def insert_department(self, code, department, type, date, uid):
+        sql = """insert into tb_department(name,rise,fall,total,code,ddate,type,stock_id) values ('%s','%s','%s','%s','%s','%s','%s','%s')""" % (
             department['name'], department['rise'], department['fall'], department['total'], code,
-            date, type)
+            date, type, uid)
 
         cursor = self.connect.cursor()
         try:
