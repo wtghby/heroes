@@ -48,6 +48,8 @@ class Mysql:
             self.connect.rollback()
 
     def insert_department(self, code, department, type, date, uid):
+        if department['name'] is None:
+            return
         sql = """insert into tb_department(name,rise,fall,total,code,ddate,type,stock_id) values ('%s','%s','%s','%s','%s','%s','%s','%s')""" % (
             department['name'], department['rise'], department['fall'], department['total'], code,
             date, type, uid)
